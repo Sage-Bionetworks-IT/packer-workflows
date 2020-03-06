@@ -7,16 +7,32 @@ A packer project to build an AMI containing software for running bioinformatics 
 * Install [packer](https://www.packer.io/intro/getting-started/install.html)
 * Install [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 
-### Validate
+### Validate a template
 Choose an ImageName such as "MyImage" and run
 ```
 packer validate -var 'ImageName=MyImage' template.json
 ```
 
+#### Access
+* Request an IAM account in [Imagecentral](https://github.com/Sage-Bionetworks/imagecentral-infra)
+* Change password and set up MFA
+* Create a Keypair
+* Add your access code and secrety key to `~/.aws/credentials`, using a profile such as "imagecentral.jsmith"
+* Authenticate with `awsmfa`, for example `awsmfa -i imagecentral.jsmith -t jsmith@imagecentral`
+* Finally, get the correct role ARN for the PackerServiceRole then add the following:
+```
+[profile packer-service-imagecentral]
+region = us-east-1
+role_arn = *****
+source_profile = jsmith@imagecentral
+```
+
+Now you will be able to build in Imagecentral.
+
 ### Manual AMI Build
 If you would like to test building an AMI run:
 ```
-packer build -var AwsProfile=my-aws-account -var AwsRegion=us-east-1 src/template.json
+packer build -var AwsProfile=packer-service-imagecentral -var AwsRegion=us-east-1 -var ImageName=workflows-test src/template.json
 ```
 
 Packer will do the following:
