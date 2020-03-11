@@ -32,7 +32,8 @@ Now you will be able to build in Imagecentral.
 ### Manual AMI Build
 If you would like to test building an AMI run:
 ```
-packer build -var AwsProfile=packer-service-imagecentral -var AwsRegion=us-east-1 -var ImageName=workflows-test src/template.json
+cd src
+packer build -var PACKER_LOG=1 -var AwsProfile=packer-service-imagecentral -var AwsRegion=us-east-1 -var ImageName=packer-workflows-DEV template.json
 ```
 
 Packer will do the following:
@@ -41,6 +42,19 @@ Packer will do the following:
 * Delete the EC2
 
 __Note__: Packer deploys a new AMI to the AWS account specified by the AwsProfile
+
+To remove test AMIs:
+```
+# get AMI_ID by substituting the ImageName you used, or check the console
+AMI_NAME=packer-workflows-TEST
+AMI_ID=$(aws --profile packer-service-imagecentral ec2 describe-images --filters Name=name,Values=$AMI_NAME | jq -j '. | .Images[0].ImageId')
+# deregister the image
+aws --profile packer-service-imagecentral ec2 deregister-image --image-id $AMI_ID
+# get the snapshots created (this assumes the name is unique)
+SNAPS=(`aws --profile packer-service-imagecentral ec2 describe-snapshots --filters Name=tag:Name,Values=$AMI_NAME | jq -r '.Snapshots | .[].SnapshotId'`)
+# remove them
+for snap in "${SNAPS[@]}"; do aws --profile packer-service-imagecentral ec2 delete-snapshot --snapshot-id $snap; done
+```
 
 ### Pull Requests and Versions.
 To make changes, we create pull requests.

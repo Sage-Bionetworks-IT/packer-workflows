@@ -2,6 +2,33 @@
   become: yes
 
   tasks:
-  - name: Print debug message
-    debug:
-      msg: Hello, world!
+
+  - name: Add Docker GPG key
+    apt_key: url=https://download.docker.com/linux/ubuntu/gpg
+
+  - name: Add Docker APT repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ansible_distribution_release}} stable
+      update_cache: yes
+
+  - name: install packages
+    package:
+      name:
+        - python3-pip
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+      state: present
+
+  - name: Docker post-install
+    shell: |
+      if [ -z $(getent group docker) ]; then
+        groupadd docker
+      fi
+      gpasswd -a {{ lookup('env','SSH_USERNAME') }} docker
+
+  - name: Make pip3 default
+    shell: "update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1"
+
+  - name: install python packages
+    shell: "pip install awscli awsmfa cwltool toil[cwl] synapseclient"
