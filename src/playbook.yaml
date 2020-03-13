@@ -14,7 +14,6 @@
   - name: install packages
     package:
       name:
-        - python3-pip
         - docker-ce
         - docker-ce-cli
         - containerd.io
@@ -27,8 +26,12 @@
       fi
       gpasswd -a {{ lookup('env','SSH_USERNAME') }} docker
 
-  - name: Make pip3 default
-    shell: "update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1"
-
   - name: install python packages
-    shell: "pip install awscli awsmfa cwltool toil[cwl] synapseclient"
+    pip:
+      name:
+        - awscli==1.18.19
+        - awsmfa==0.2.9
+        - cwltool==2.0.20200303141624
+        - toil[cwl]==3.24.0
+        - synapseclient==1.9.4
+      executable: pip3
