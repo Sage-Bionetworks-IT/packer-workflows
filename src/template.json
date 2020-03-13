@@ -55,7 +55,7 @@
     "OwnerEmail": "tess.thyer@sagebase.org",
     "Project": "Infrastructure",
     "SnapshotGroups": "all",
-    "SourceImage": "ami-0c04e7f09a1fbcec0",
+    "SourceImage": "ami-0d383722ce22a6ea1",
     "SshUsername": "ubuntu",
     "VolumeSize": "8"
   }
