@@ -43,23 +43,21 @@ Packer will do the following:
 
 __Note__: Packer deploys a new AMI to the AWS account specified by the AwsProfile
 
-To remove test AMIs:
-```
-# get AMI_ID by substituting the ImageName you used, or check the console
-AMI_NAME=packer-workflows-TEST
-AMI_ID=$(aws --profile packer-service-imagecentral ec2 describe-images --filters Name=name,Values=$AMI_NAME | jq -j '. | .Images[0].ImageId')
-# deregister the image
-aws --profile packer-service-imagecentral ec2 deregister-image --image-id $AMI_ID
-# get the snapshots created (this assumes the name is unique)
-SNAPS=(`aws --profile packer-service-imagecentral ec2 describe-snapshots --filters Name=tag:Name,Values=$AMI_NAME | jq -r '.Snapshots | .[].SnapshotId'`)
-# remove them
-for snap in "${SNAPS[@]}"; do aws --profile packer-service-imagecentral ec2 delete-snapshot --snapshot-id $snap; done
-```
-
 ### Pull Requests and Versions.
 To make changes, we create pull requests.
 Once these changes are merged to master, create a tag.
 When the tag is pushed travis will build an AMI version with that tag number.
+
+### Searching
+List the built images by using the AWS CLI:
+```
+aws ec2 describe-images --owners 867686887310 --filters Name=tag:Name,Values=my-test-image
+```
+
+### Removal
+Building an AMI will create the AMI and one or more snapshots for the AMI.  When deleting
+the AMI remember to also delete its snapshots. Use the provided [bash script](deregister_ami.sh)
+to remove the AMI and its snapshots.
 
 ## Contributions
 Contributions are welcome.
