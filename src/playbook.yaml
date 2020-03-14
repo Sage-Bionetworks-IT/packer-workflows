@@ -36,8 +36,6 @@
   - name: install python packages
     pip:
       name:
-        - awscli==1.18.19
-        - awsmfa==0.2.9
         - cwltool==2.0.20200303141624
         - toil[cwl]==3.24.0
         - synapseclient==1.9.4
