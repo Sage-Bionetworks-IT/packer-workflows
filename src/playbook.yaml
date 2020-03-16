@@ -2,6 +2,41 @@
   become: yes
 
   tasks:
-  - name: Print debug message
-    debug:
-      msg: Hello, world!
+
+  - name: Add Docker GPG key
+    apt_key: url=https://download.docker.com/linux/ubuntu/gpg
+
+  - name: install packages
+    package:
+      name:
+        - apt-transport-https # this must be installed before adding docker repository
+      state: present
+      update_cache: yes
+
+  - name: Add Docker APT repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ansible_distribution_release}} stable
+      update_cache: yes
+
+  - name: install docker packages
+    package:
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+      state: present
+
+  - name: Docker post-install
+    shell: |
+      if [ -z $(getent group docker) ]; then
+        groupadd docker
+      fi
+      gpasswd -a {{ lookup('env','SSH_USERNAME') }} docker
+
+  - name: install python packages
+    pip:
+      name:
+        - cwltool==2.0.20200303141624
+        - toil[cwl]==3.24.0
+        - synapseclient==1.9.4
+      executable: pip3

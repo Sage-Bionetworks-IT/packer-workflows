@@ -32,7 +32,8 @@ Now you will be able to build in Imagecentral.
 ### Manual AMI Build
 If you would like to test building an AMI run:
 ```
-packer build -var AwsProfile=packer-service-imagecentral -var AwsRegion=us-east-1 -var ImageName=workflows-test src/template.json
+cd src
+packer build -var PACKER_LOG=1 -var AwsProfile=packer-service-imagecentral -var AwsRegion=us-east-1 -var ImageName=packer-workflows-DEV template.json
 ```
 
 Packer will do the following:
@@ -46,6 +47,17 @@ __Note__: Packer deploys a new AMI to the AWS account specified by the AwsProfil
 To make changes, we create pull requests.
 Once these changes are merged to master, create a tag.
 When the tag is pushed travis will build an AMI version with that tag number.
+
+### Searching
+List the built images by using the AWS CLI:
+```
+aws ec2 describe-images --owners 867686887310 --filters Name=tag:Name,Values=my-test-image
+```
+
+### Removal
+Building an AMI will create the AMI and one or more snapshots for the AMI.  When deleting
+the AMI remember to also delete its snapshots. Use the provided [bash script](deregister_ami.sh)
+to remove the AMI and its snapshots.
 
 ## Contributions
 Contributions are welcome.
