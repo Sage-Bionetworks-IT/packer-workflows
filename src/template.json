@@ -43,6 +43,9 @@
         "ANSIBLE_SSH_ARGS='-o IdentitiesOnly=yes'",
         "SSH_USERNAME={{user `SshUsername`}}"
       ],
+      "extra_arguments": [
+        "-v"
+      ],
       "playbook_file": "playbook.yaml",
       "type": "ansible"
     }
