@@ -1,19 +1,11 @@
 - hosts: all
   become: yes
 
-  tasks:
-  - pause:
-      seconds: 30
-
   - name: Add Docker GPG key
     apt_key: url=https://download.docker.com/linux/ubuntu/gpg
 
   - name: install packages
-    package:
-      name:
-        - apt-transport-https # this must be installed before adding docker repository
-      state: present
-      update_cache: yes
+    shell: "yes | aptdcon --hide-terminal --install 'apt-transport-https'"
 
   - name: Add Docker APT repository
     apt_repository:
