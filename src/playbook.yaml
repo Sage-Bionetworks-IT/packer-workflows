@@ -5,21 +5,13 @@
   - name: Add Docker GPG key
     apt_key: url=https://download.docker.com/linux/ubuntu/gpg
 
-  - name: install packages
-    shell: "yes | aptdcon --hide-terminal --install 'apt-transport-https'"
-
   - name: Add Docker APT repository
     apt_repository:
       repo: deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ansible_distribution_release}} stable
       update_cache: yes
 
-  - name: install docker packages
-    package:
-      name:
-        - docker-ce
-        - docker-ce-cli
-        - containerd.io
-      state: present
+  - name: install packages
+    shell: "yes | aptdcon --hide-terminal --install 'apt-transport-https docker-ce docker-ce-cli containerd.io'"
 
   - name: Docker post-install
     shell: |
