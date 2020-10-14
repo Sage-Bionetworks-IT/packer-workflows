@@ -26,7 +26,7 @@
   - name: install python packages
     pip:
       name:
-        - cwltool==2.0.20200303141624
-        - toil[cwl]==3.24.0
-        - synapseclient==1.9.4
+        - cwltool==3.0.20200807132242
+        - toil[cwl]==4.2.0
+        - synapseclient==2.2.0
       executable: pip3
